@@ -13,7 +13,7 @@ ferr = None
 
 
 def getTaobao(word,retry = 3):
-    time.sleep(3)
+#    time.sleep(3)
     if --retry > 0:
         try:
             par = {'q' : word }
@@ -23,13 +23,14 @@ def getTaobao(word,retry = 3):
             dom_words = H.fromstring(req.text)
             html_words = dom_words.xpath(TAOBAO_XPATH)
             if len(html_words) == 0:
-                ferr.write('%s:NO RESULT:%s\n' % (datetime.datetime.now(),word.encode('utf-8','ignore')))
+                ferr.write('%s:%s\n' % (datetime.datetime.now(),word.encode('utf-8','ignore')))
             for word in html_words:
                 yield word
         except Exception as err:
             sys.stderr.write("%s:ERR:%s " % (datetime.datetime.now(),err))
+            ferr.write('%s:%s\n' % (datetime.datetime.now(),word.encode('utf-8','ignore')))
     else:
-        ferr.write('%s:CAN GET:%s\n' % (datetime.datetime.now(),word.encode('utf-8','ignore')))
+        ferr.write('%s:%s\n' % (datetime.datetime.now(),word.encode('utf-8','ignore')))
 
 def main():
     if len(sys.argv) != 3:

@@ -18,7 +18,7 @@ class fetcher:
         self.threads = threads
         self.running = 0
         with open(failfiles ,'w+') as self.failfiles:
-            print 'open log file'
+            self.failfiles.write("open log file\n")
         for i in range(threads):
             t = Thread(target=self.threadget)
             t.setDaemon(True)
@@ -30,7 +30,8 @@ class fetcher:
         self.q_ans.join()
 
     def taskleft(self):
-        print "Infetcher:\t" , datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S') , "\tRunning job\t" , self.running , "\tReq\t" , self.q_req.qsize() , "\tResult\t" , self.q_ans.qsize() , "\n"
+        #print "Infetcher:\t" , datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S') , "\tRunning job\t" , self.running , "\tReq\t" , self.q_req.qsize() , "\tResult\t" , self.q_ans.qsize() , "\n"
+        self.failfiles.write("Infetcher:\t" , datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S') , "\tRunning job\t" , self.running , "\tReq\t" , self.q_req.qsize() , "\tResult\t" , self.q_ans.qsize() , "\n")
         return self.q_req.qsize()+self.q_ans.qsize()+self.running
 
     def push(self,req):
@@ -44,7 +45,7 @@ class fetcher:
         return self.q_ans.qsize()
 
     def threadget(self):
-        opener = httplib2.Http("/d1/spider_cache/.cache") #复用
+        opener = httplib2.Http(".cache") #复用
         while True:
             req = self.q_req.get()
             self.lock.acquire() #要保证该操作的原子性，进入critical area
@@ -53,7 +54,8 @@ class fetcher:
             try:
                 ans = self.get(req,opener)
             except Exception, what:
-                print what
+                self.failfiles.write('%s\t%s\n' % req , what)
+                #print what
             self.q_ans.put((req,ans))
             self.lock.acquire() #要保证该操作的原子性，进入critical area
             self.running -= 1
@@ -70,7 +72,7 @@ class fetcher:
                 return self.get(req,opener,retries-1)
             else:
                 self.failfiles.write('%s\t%s\n' % req , what)
-                print 'GET Failed',req, what
+                #print 'GET Failed',req, what
                 return ''
         return data
 

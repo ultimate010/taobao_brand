@@ -17,8 +17,8 @@ class fetcher:
         self.q_ans = Queue() #完成队列
         self.threads = threads
         self.running = 0
-        with open(failfiles ,'w+') as self.failfiles:
-            self.failfiles.write("open log file\n")
+        #with open(failfiles ,'w+') as self.failfiles:
+            #self.failfiles.write("open log file\n")
         for i in range(threads):
             t = Thread(target=self.threadget)
             t.setDaemon(True)
@@ -31,7 +31,7 @@ class fetcher:
 
     def taskleft(self):
         #print "Infetcher:\t" , datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S') , "\tRunning job\t" , self.running , "\tReq\t" , self.q_req.qsize() , "\tResult\t" , self.q_ans.qsize() , "\n"
-        self.failfiles.write("Infetcher:\t" , datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S') , "\tRunning job\t" , self.running , "\tReq\t" , self.q_req.qsize() , "\tResult\t" , self.q_ans.qsize() , "\n")
+        #self.failfiles.write("Infetcher:\t" , datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S') , "\tRunning job\t" , self.running , "\tReq\t" , self.q_req.qsize() , "\tResult\t" , self.q_ans.qsize() , "\n")
         return self.q_req.qsize()+self.q_ans.qsize()+self.running
 
     def push(self,req):
@@ -54,8 +54,8 @@ class fetcher:
             try:
                 ans = self.get(req,opener)
             except Exception, what:
-                self.failfiles.write('%s\t%s\n' % req , what)
-                #print what
+                #self.failfiles.write('%s\t%s\n' % req , what)
+                sys.stderr.write("%s\n" % what)
             self.q_ans.put((req,ans))
             self.lock.acquire() #要保证该操作的原子性，进入critical area
             self.running -= 1
@@ -71,7 +71,7 @@ class fetcher:
                 time.sleep(3)
                 return self.get(req,opener,retries-1)
             else:
-                self.failfiles.write('%s\t%s\n' % req , what)
+                #self.failfiles.write('%s\t%s\n' % req , what)
                 #print 'GET Failed',req, what
                 return ''
         return data

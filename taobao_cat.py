@@ -31,6 +31,7 @@ def main():
             if(count % 10 == 0):
                 sys.stderr.write("%s:Doing %d %s\n" % (datetime.datetime.now(),count,arr[0].encode('utf-8')))
                 fileLog.write("%s:Doing %d %s\n" % (datetime.datetime.now(),count,arr[0].encode('utf-8')))
+                fileLog.flush()
             try:
                 mystr = arr[0]
                 for i in range(len(arr) - 1):
@@ -41,6 +42,7 @@ def main():
                     for cat in ans:
                         mystr = mystr + "\t" + cat
                 fileout.write("%s\n" % mystr.encode('utf-8','ignore'))
+                fileout.flush()
                 print ("%s\n" % mystr.encode('utf-8','ignore'))
             except Exception as err:
                 sys.stderr.write("%s:%s\n" % (datetime.datetime.now(),err))

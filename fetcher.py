@@ -9,7 +9,7 @@ from gzip import GzipFile
 import socket
 import sys
 
-socket.setdefaulttimeout(5) #设置5秒后连接超时
+socket.setdefaulttimeout(3) #设置5秒后连接超时
 
 class fetcher:
     def __init__(self,threads):
@@ -42,7 +42,7 @@ class fetcher:
         return self.q_ans.qsize()
 
     def threadget(self):
-        opener = httplib2.Http(".cache") #复用
+        opener = httplib2.Http(".cache",timeout = 3) #复用
         while True:
             req = self.q_req.get()
             self.lock.acquire() #要保证该操作的原子性，进入critical area

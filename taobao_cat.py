@@ -34,10 +34,15 @@ def main():
                 fileLog.flush()
             try:
                 mystr = arr[0]
+                taskCount = 0
                 for i in range(len(arr) - 1):
-                    f.push(arr[i+1])
-                while f.taskleft():
+                    if str(arr[i+1]).find('tmall') == -1:
+                        taskCount += 1
+                        f.push(arr[i+1])
+                while taskCount > 0:
+                    taskCount -= 1
                     url , content = f.pop()
+                    f.taskleft() #watch ans
                     ans = pattern.findall(content)
                     for cat in ans:
                         mystr = mystr + "\t" + cat

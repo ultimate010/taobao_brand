@@ -43,29 +43,18 @@ class fetcher:
         return self.q_ans.qsize()
 
     def threadget(self,myId):
-        opener = httplib2.Http(".cache",timeout = 3) #复用
+        opener = httplib2.Http(cache=None,timeout = 3) #复用
         while True:
             req = self.q_req.get()
             self.lock.acquire() #要保证该操作的原子性，进入critical area
-            sys.stderr.write("myId:%d\tEnter lock to get req\n"%(myId))
             self.running += 1
             self.lock.release()
-            sys.stderr.write("myId:%d\tOut lock to get req\n"%(myId))
-#            try:
             ans = self.get(myId,req,opener)
-            if ans == '':
-                sys.stderr.write("myId:%d\t%s:no ans\n"%(myId,req))
-            else:
-                sys.stderr.write("myId:%d\t%s:Get ans\n"%(myId,req))
-#            except Exception, what:
-#                sys.stderr.write("myId:%d\t%s:%s\n" % (myId,datetime.datetime.now(),what))
             self.q_ans.put((req,ans))
             self.lock.acquire() #要保证该操作的原子性，进入critical area
-            sys.stderr.write("myId:%d\tEnter lock to put ans\n"%(myId))
             self.running -= 1
             self.lock.release()
             self.q_req.task_done() #req finish
-            sys.stderr.write("myId:%d\tOut lock to put ans\n"%(myId))
             time.sleep(1)
 
     def get(self,myId,req,opener,retries=3):

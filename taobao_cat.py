@@ -11,13 +11,13 @@ threadsNum = 16
 
 def main():
     if len(sys.argv) != 4:
-        print "Usage: python %s urlFile outfile skipNum 1> outfile 2>logFile" % sys.argv[0]
+        print "Usage: python %s urlFile outfile skipNum 2>logFile" % sys.argv[0]
         exit(1)
     count = 0
     pattern = re.compile("rootCatId=([0-9]+)", re.M)
     f = fetcher(threads=threadsNum)
     fileout = open(sys.argv[2],'w')
-    fileLog = open('taobao_cat.log','w')
+    fileLog = open('brand_cat.log','w')
     with open(sys.argv[1],'r') as fi:
         for line in fi:
             line = line.strip('\r\n')
@@ -42,13 +42,13 @@ def main():
                 while taskCount > 0:
                     taskCount -= 1
                     url , content = f.pop()
-                    f.taskleft() #watch ans
+#                    f.taskleft() #watch ans
                     ans = pattern.findall(content)
                     for cat in ans:
                         mystr = mystr + "\t" + cat
                 fileout.write("%s\n" % mystr.encode('utf-8','ignore'))
                 fileout.flush()
-                print ("%s\n" % mystr.encode('utf-8','ignore'))
+                #print ("%s\n" % mystr.encode('utf-8','ignore'))
             except Exception as err:
                 sys.stderr.write("%s:%s\n" % (datetime.datetime.now(),err))
 
